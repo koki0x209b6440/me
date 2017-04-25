@@ -123,8 +123,6 @@ function setTitle(title,mtitle)
 
 
 
-
-
 <script type="text/javascript">
   setTitle("maus_particle(processing1.5.1)","maus_particle");
 </script>
@@ -132,6 +130,20 @@ function setTitle(title,mtitle)
 [<a href="../../data/2016/0202/maus_particle.zip" download="maus_particle.zip">ダウンロード</a>]
 　パーティクルテスト。構造を整理。
 　持続時間をテクスチャにした。
+
+
+
+<script type="text/javascript">
+  setTitle("自由メモ帳(自動セーブ)","★メモらん");
+</script>
+<textarea id="memo" rows="50" cols="40" name="40"></textarea>
+テスト:Savingは一時的に非表示(ガクンと微スクロールが起きて不快)<span id="message" style="display:none;">Saving..</span>
+<p><input type="button" id="save" value="保存">
+<!--
+  <input type="button" id="clear" value="消去"></p>
+-->
+
+
 
 <!--
 0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff
@@ -833,8 +845,41 @@ function setTitle(title,mtitle)
       }
       $("#menubar").html(htmlstr);
     }
-
     $(window).on("load scroll resize", getScrollTop);
+
+
+    //自動メモ機能(本文のどこかの位置で、memoタグの……入力枠？を設置して、以下が自動発動)
+    /*ページを開いたときにローカルストレージの中にでータがあれば読み込む*/
+    if(localStorage.getItem('memo')){
+            /*メモの中味を呼び出したものに置き換える*/
+            $('#memo').val(localStorage.getItem('memo'));
+    }
+    $('#clear').click(function() {
+            /*メモの中味を消去*/
+            $('#memo').val('');
+            /*ローカルストレージの中味を削除*/
+            localStrage.removeItem('memo');
+            //localStrage.clear();
+    });
+    $('#save').click(function() {
+            /*メモの中に記述したものをローカルストレージに書き込み*/
+          localStorage.setItem('memo',$('#memo').val());
+            /*ブラウザのコンソールログに読み出しする*/
+          console.log(localStorage.getItem('memo'));
+    });
+    /*一定時間ごとに自動保存する設定（即時関数:関数名を()で囲み全体を名前として実行）*/
+    (function autoSave() {
+        /*メモの中身を書き込む*/
+        localStorage.setItem('memo',$('#memo').val());
+        /*書き込んだときに計2秒メッセージを表示する*/
+        /*$('#message').show(1000).hide(1000);*/
+        /*自分自身を一定の秒数ごとに繰り返し呼び出す*/
+        setTimeout(autoSave, 10000);
+    })();
+    /*キー入力する度に自動保存される設定*/
+    $('#memo').bind('keyup',function(){
+        localStorage.setItem('memo',$('#memo').val());
+    });
   });
 </script>
 
